@@ -1,0 +1,78 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Virtual environments and local Python config
+.venv/
+venv/
+env/
+ENV/
+pip-wheel-metadata/
+*.egg-info/
+.python-version
+
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+
+# IDE, editor and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs and runtime files
+*.log
+logs/
+*.pid
+
+# Build and distribution artifacts
+build/
+dist/
+site/
+
+# Generated reports and temporary outputs
+reports/
+outputs/
+tmp/
+temp/
+
+# Downloaded/raw external data. Keep source registry files tracked.
+data/raw/*
+!data/raw/official_sources/
+!data/raw/official_sources/**
+
+# Generated local datasets, databases and vector stores
+data/interim/
+data/cache/
+data/vectorstores/
+data/embeddings/
+*.db
+*.duckdb
+*.sqlite
+*.sqlite3
+chroma/
+chroma_db/
+.chromadb/
+
+# Large local model artifacts
+models/
+checkpoints/
+*.pt
+*.pth
+*.onnx
+*.safetensors
+
+# Local agent/tooling state
+.agents/
+.codex/
