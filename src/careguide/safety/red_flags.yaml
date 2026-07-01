@@ -1,0 +1,192 @@
+canonical_rules:
+  shortness of breath:
+    severity: urgent
+    name: Shortness of breath
+    reason: Breathing difficulty can indicate a condition needing prompt assessment.
+  slow breathing:
+    severity: emergency
+    name: Slow breathing
+    reason: Slow breathing can indicate poisoning, neurologic compromise or respiratory failure.
+  wheezing:
+    severity: urgent
+    name: Wheezing
+    reason: Wheezing can worsen quickly, especially with asthma or allergy.
+  cyanosis:
+    severity: emergency
+    name: Cyanosis
+    reason: Blue lips or cyanosis can indicate low oxygen.
+  chest pain:
+    severity: urgent
+    name: Chest pain
+    reason: Chest pain should be assessed, especially if severe or associated with breathing symptoms.
+  jaw pain radiation:
+    severity: emergency
+    name: Chest pain radiating to jaw
+    reason: Chest pain radiating to the jaw can be a cardiac warning sign.
+  syncope:
+    severity: emergency
+    name: Fainting
+    reason: Fainting can indicate serious cardiovascular or neurologic disease.
+  thunderclap headache:
+    severity: emergency
+    name: Sudden severe headache
+    reason: Sudden severe headache is a neurologic red flag.
+  altered mental status:
+    severity: emergency
+    name: Altered mental status
+    reason: Confusion, drowsiness or poor responsiveness needs urgent evaluation.
+  seizure:
+    severity: emergency
+    name: Seizure
+    reason: Seizure with ongoing altered state requires emergency assessment.
+  facial droop:
+    severity: emergency
+    name: Facial droop
+    reason: Sudden facial droop can be a stroke warning sign.
+  speech difficulty:
+    severity: emergency
+    name: Speech difficulty
+    reason: Sudden speech difficulty can be a stroke warning sign.
+  unilateral weakness:
+    severity: emergency
+    name: One-sided weakness
+    reason: Sudden one-sided weakness can be a stroke warning sign.
+  neck stiffness:
+    severity: emergency
+    name: Fever with neck stiffness
+    reason: Neck stiffness with fever or headache can indicate a serious infection.
+  photophobia:
+    severity: urgent
+    name: Photophobia with headache or fever
+    reason: Light sensitivity with headache or fever needs prompt assessment.
+  self-harm thoughts:
+    severity: emergency
+    name: Self-harm thoughts
+    reason: Thoughts of self-harm require urgent support.
+  hematemesis:
+    severity: emergency
+    name: Vomiting blood
+    reason: Vomiting blood can indicate significant gastrointestinal bleeding.
+  bloody diarrhea:
+    severity: urgent
+    name: Bloody stool or diarrhea
+    reason: Blood in stool or diarrhea should be assessed promptly.
+  melena:
+    severity: emergency
+    name: Black stool
+    reason: Black stool can indicate gastrointestinal bleeding.
+  rigid abdomen:
+    severity: emergency
+    name: Rigid abdomen
+    reason: A rigid abdomen with severe pain can indicate a surgical emergency.
+  leg swelling:
+    severity: urgent
+    name: One-sided leg swelling
+    reason: One-sided swollen painful leg can indicate a clot, especially after immobility.
+  deformity:
+    severity: urgent
+    name: Deformity after injury
+    reason: Deformity after injury needs medical assessment.
+  hives:
+    severity: urgent
+    name: Widespread hives
+    reason: Hives can be part of an allergic reaction.
+  lip swelling:
+    severity: emergency
+    name: Lip swelling
+    reason: Lip swelling can indicate a serious allergic reaction, especially with breathing symptoms.
+  facial swelling:
+    severity: emergency
+    name: Facial swelling
+    reason: Facial swelling can indicate a serious allergic reaction.
+  bruising:
+    severity: urgent
+    name: Large or spreading bruise
+    reason: Large or spreading bruising can be risky, especially with anticoagulant use.
+  hematuria:
+    severity: urgent
+    name: Blood in urine
+    reason: Blood in urine should be assessed promptly.
+  urinary retention:
+    severity: urgent
+    name: Urinary retention
+    reason: Inability to urinate can require urgent assessment.
+  urinary incontinence:
+    severity: emergency
+    name: Loss of bladder control with back injury
+    reason: Loss of bladder control with back pain or injury can indicate spinal cord involvement.
+  vaginal bleeding:
+    severity: urgent
+    name: Vaginal bleeding
+    reason: Vaginal bleeding can need prompt assessment, especially during pregnancy.
+  missed period:
+    severity: urgent
+    name: Missed period with abdominal pain
+    reason: Missed period with severe abdominal pain can be dangerous.
+  abnormal fetal movement:
+    severity: emergency
+    name: Abnormal fetal movement
+    reason: Abnormal fetal movement needs urgent obstetric assessment.
+  blurred vision:
+    severity: urgent
+    name: Blurred vision
+    reason: Blurred vision with eye pain or headache needs prompt assessment.
+  chemical eye exposure:
+    severity: emergency
+    name: Chemical eye exposure
+    reason: Chemical exposure to the eye needs urgent care.
+  limited mouth opening:
+    severity: urgent
+    name: Limited mouth opening
+    reason: Limited mouth opening with dental infection can indicate spreading infection.
+  bleeding:
+    severity: emergency
+    name: Uncontrolled bleeding
+    reason: Bleeding that does not stop with pressure requires emergency care.
+  head injury:
+    severity: emergency
+    name: Head injury with neurologic symptoms
+    reason: Head injury with vomiting or abnormal drowsiness needs emergency assessment.
+  fall from height:
+    severity: emergency
+    name: Fall from height
+    reason: Fall from height can cause serious trauma.
+  burn:
+    severity: emergency
+    name: Significant burn
+    reason: Large burns or burns on important areas require urgent care.
+  electric shock:
+    severity: emergency
+    name: Electric shock
+    reason: Electric shock with chest symptoms needs emergency assessment.
+  chemical ingestion:
+    severity: emergency
+    name: Chemical ingestion
+    reason: Swallowing chemicals requires urgent poison or emergency support.
+  medication overdose:
+    severity: emergency
+    name: Medication overdose
+    reason: Possible overdose with reduced responsiveness is an emergency.
+  chemical exposure:
+    severity: emergency
+    name: Chemical exposure
+    reason: Chemical exposure can cause serious injury.
+  cold skin:
+    severity: emergency
+    name: Shock sign
+    reason: Cold clammy skin can indicate shock.
+  shock symptoms:
+    severity: emergency
+    name: Shock symptoms
+    reason: Shock symptoms need emergency assessment.
+
+vital_rules:
+  spo2_emergency_max: 90
+  spo2_urgent_max: 94
+  temperature_emergency_min: 40.0
+  temperature_urgent_min: 39.0
+  systolic_bp_emergency_min: 180
+  diastolic_bp_emergency_min: 120
+  systolic_bp_urgent_min: 160
+  diastolic_bp_urgent_min: 100
+
