@@ -1,0 +1,28 @@
+nhs:
+  - id: nhs_chest_pain
+    source: NHS
+    url: https://www.nhs.uk/symptoms/chest-pain/
+    topic: chest pain
+    priority: high
+    symptom_group: cardiovascular
+
+  - id: nhs_shortness_of_breath
+    source: NHS
+    url: https://www.nhs.uk/symptoms/shortness-of-breath/
+    topic: shortness of breath
+    priority: high
+    symptom_group: respiratory
+
+  - id: nhs_headaches
+    source: NHS
+    url: https://www.nhs.uk/symptoms/headaches/
+    topic: headache
+    priority: high
+    symptom_group: neurologic
+
+  - id: nhs_stomach_ache
+    source: NHS
+    url: https://www.nhs.uk/symptoms/stomach-ache/
+    topic: abdominal pain
+    priority: high
+    symptom_group: gastrointestinal
