@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 
 
 SourceName = Literal["NHS", "MedlinePlus", "CDC"]
@@ -43,11 +43,3 @@ class OfficialHealthDocument(BaseModel):
     page_last_reviewed: str | None = None
     next_review_due: str | None = None
     sections: list[DocumentSection] = Field(min_length=1)
-
-    @field_validator("sections")
-    @classmethod
-    def sections_must_have_unique_headings(cls, value: list[DocumentSection]) -> list[DocumentSection]:
-        headings = [section.heading for section in value]
-        if len(headings) != len(set(headings)):
-            raise ValueError("section headings must be unique within one document")
-        return value

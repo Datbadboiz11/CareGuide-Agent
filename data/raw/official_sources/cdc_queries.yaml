@@ -1,0 +1,227 @@
+queries:
+  - query: flu
+    topic: flu
+    symptom_group: infectious_disease
+    priority: high
+    max_results: 10
+
+  - query: covid
+    topic: COVID-19
+    symptom_group: infectious_disease
+    priority: high
+    max_results: 10
+
+  - query: food poisoning
+    topic: food poisoning
+    symptom_group: gastrointestinal
+    priority: high
+    max_results: 10
+
+  - query: fever
+    topic: fever
+    symptom_group: general
+    priority: medium
+    max_results: 10
+
+  - query: diarrhea
+    topic: diarrhea
+    symptom_group: gastrointestinal
+    priority: medium
+    max_results: 10
+
+  - query: vomiting
+    topic: vomiting
+    symptom_group: gastrointestinal
+    priority: medium
+    max_results: 10
+
+  - query: dehydration
+    topic: dehydration
+    symptom_group: general
+    priority: medium
+    max_results: 10
+
+  - query: asthma
+    topic: asthma
+    symptom_group: respiratory
+    priority: medium
+    max_results: 10
+
+  - query: allergies
+    topic: allergies
+    symptom_group: allergy
+    priority: medium
+    max_results: 10
+
+  - query: stroke
+    topic: stroke
+    symptom_group: neurologic
+    priority: high
+    max_results: 10
+
+  - query: heart attack
+    topic: heart attack
+    symptom_group: cardiovascular
+    priority: high
+    max_results: 10
+
+  - query: seizure
+    topic: seizure
+    symptom_group: neurologic
+    priority: high
+    max_results: 10
+
+pages:
+  - id: cdc_flu_signs_symptoms
+    url: https://www.cdc.gov/flu/signs-symptoms/index.html
+    title: Signs and Symptoms of Flu
+    topic: flu
+    symptom_group: infectious_disease
+    priority: high
+
+  - id: cdc_covid_symptoms
+    url: https://www.cdc.gov/covid/signs-symptoms/index.html
+    title: Symptoms of COVID-19
+    topic: COVID-19
+    symptom_group: infectious_disease
+    priority: high
+
+  - id: cdc_food_poisoning_symptoms
+    url: https://www.cdc.gov/food-safety/signs-symptoms/index.html
+    title: Food Poisoning Symptoms
+    topic: food poisoning
+    symptom_group: gastrointestinal
+    priority: high
+
+  - id: cdc_food_safety_basics
+    url: https://www.cdc.gov/food-safety/about/index.html
+    title: Food Safety Basics
+    topic: food safety
+    symptom_group: gastrointestinal
+    priority: medium
+
+  - id: cdc_stroke_signs_symptoms
+    url: https://www.cdc.gov/stroke/signs-symptoms/index.html
+    title: Signs and Symptoms of Stroke
+    topic: stroke
+    symptom_group: neurologic
+    priority: high
+
+  - id: cdc_heart_attack
+    url: https://www.cdc.gov/heart-disease/about/heart-attack.html
+    title: About Heart Attack Symptoms, Risk, and Recovery
+    topic: heart attack
+    symptom_group: cardiovascular
+    priority: high
+
+  - id: cdc_asthma_about
+    url: https://www.cdc.gov/asthma/about/index.html
+    title: About Asthma
+    topic: asthma
+    symptom_group: respiratory
+    priority: medium
+
+  - id: cdc_rsv_symptoms
+    url: https://www.cdc.gov/rsv/symptoms/index.html
+    title: Symptoms and Care of RSV
+    topic: RSV
+    symptom_group: respiratory
+    priority: high
+
+  - id: cdc_pneumonia_about
+    url: https://www.cdc.gov/pneumonia/about/index.html
+    title: About Pneumonia
+    topic: pneumonia
+    symptom_group: respiratory
+    priority: high
+
+  - id: cdc_norovirus_about
+    url: https://www.cdc.gov/norovirus/about/index.html
+    title: About Norovirus
+    topic: norovirus
+    symptom_group: gastrointestinal
+    priority: high
+
+  - id: cdc_sepsis_about
+    url: https://www.cdc.gov/sepsis/about/index.html
+    title: About Sepsis
+    topic: sepsis
+    symptom_group: infectious_disease
+    priority: high
+
+  - id: cdc_meningitis_about
+    url: https://www.cdc.gov/meningitis/about/index.html
+    title: About Meningitis
+    topic: meningitis
+    symptom_group: neurologic
+    priority: high
+
+  - id: cdc_seizure_first_aid
+    url: https://www.cdc.gov/epilepsy/first-aid-for-seizures/index.html
+    title: First Aid for Seizures
+    topic: seizure
+    symptom_group: neurologic
+    priority: high
+
+  - id: cdc_carbon_monoxide_about
+    url: https://www.cdc.gov/carbon-monoxide/about/index.html
+    title: Carbon Monoxide Poisoning Basics
+    topic: carbon monoxide poisoning
+    symptom_group: environmental
+    priority: high
+
+  - id: cdc_heat_health_about
+    url: https://www.cdc.gov/heat-health/about/index.html
+    title: About Heat and Your Health
+    topic: heat illness
+    symptom_group: environmental
+    priority: high
+
+  - id: cdc_strep_throat_about
+    url: https://www.cdc.gov/group-a-strep/about/strep-throat.html
+    title: About Strep Throat
+    topic: strep throat
+    symptom_group: ent
+    priority: medium
+
+  - id: cdc_whooping_cough_symptoms
+    url: https://www.cdc.gov/pertussis/signs-symptoms/index.html
+    title: Symptoms of Whooping Cough
+    topic: whooping cough
+    symptom_group: respiratory
+    priority: medium
+
+  - id: cdc_measles_symptoms
+    url: https://www.cdc.gov/measles/signs-symptoms/index.html
+    title: Measles Symptoms and Complications
+    topic: measles
+    symptom_group: infectious_disease
+    priority: medium
+
+  - id: cdc_dengue_symptoms
+    url: https://www.cdc.gov/dengue/signs-symptoms/index.html
+    title: Symptoms of Dengue and Testing
+    topic: dengue
+    symptom_group: infectious_disease
+    priority: medium
+
+  - id: cdc_tb_symptoms
+    url: https://www.cdc.gov/tb/signs-symptoms/index.html
+    title: Signs and Symptoms of Tuberculosis
+    topic: tuberculosis
+    symptom_group: respiratory
+    priority: medium
+
+  - id: cdc_chickenpox_symptoms
+    url: https://www.cdc.gov/chickenpox/signs-symptoms/index.html
+    title: Chickenpox Symptoms and Complications
+    topic: chickenpox
+    symptom_group: skin
+    priority: low
+
+  - id: cdc_lyme_symptoms
+    url: https://www.cdc.gov/lyme/signs-symptoms/index.html
+    title: Signs and Symptoms of Untreated Lyme Disease
+    topic: Lyme disease
+    symptom_group: infectious_disease
+    priority: low
