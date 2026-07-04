@@ -51,8 +51,13 @@ temp/
 data/raw/*
 !data/raw/official_sources/
 !data/raw/official_sources/**
+data/raw/official_sources/html/
+data/raw/official_sources/cdc/
+!data/raw/official_sources/*.yaml
 
 # Generated local datasets, databases and vector stores
+data/processed/
+data/indexes/
 data/interim/
 data/cache/
 data/vectorstores/
@@ -76,3 +81,6 @@ checkpoints/
 # Local agent/tooling state
 .agents/
 .codex/
+
+# Local notes
+note.txt
