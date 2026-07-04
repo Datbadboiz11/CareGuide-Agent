@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from careguide.rag.collect_nhs_sources import load_sources
+from careguide.rag.collect_nhs_sources import extract_nhs_health_links, load_sources, source_from_nhs_url
 from careguide.schemas.document import OfficialHealthDocument
 
 
@@ -43,7 +43,7 @@ def test_official_documents_output_schema_if_file_exists() -> None:
         for line in file:
             documents.append(OfficialHealthDocument.model_validate(json.loads(line)))
 
-    assert len(documents) == 4
+    assert len(documents) >= 4
     assert {document.source for document in documents} == {"NHS"}
     assert all(document.sections for document in documents)
     assert any(
@@ -51,3 +51,31 @@ def test_official_documents_output_schema_if_file_exists() -> None:
         for document in documents
         for section in document.sections
     )
+
+
+def test_extract_nhs_health_links_from_index_html() -> None:
+    html = (
+        "<main>"
+        '<a href="/conditions/asthma/">Asthma</a>'
+        '<a href="https://www.nhs.uk/symptoms/chest-pain/">Chest pain</a>'
+        '<a href="/nhs-services/">NHS services</a>'
+        '<a href="https://example.com/conditions/nope/">External</a>'
+        '<a href="/conditions/">Index</a>'
+        "</main>"
+    )
+
+    links = extract_nhs_health_links(html, "https://www.nhs.uk/conditions/")
+
+    assert links == [
+        "https://www.nhs.uk/conditions/asthma/",
+        "https://www.nhs.uk/symptoms/chest-pain/",
+    ]
+
+
+def test_source_from_nhs_url_uses_slug_metadata() -> None:
+    source = source_from_nhs_url("https://www.nhs.uk/conditions/shortness-of-breath/")
+
+    assert source.id == "nhs_shortness_of_breath"
+    assert source.source == "NHS"
+    assert source.topic == "shortness of breath"
+    assert source.symptom_group == "conditions"
