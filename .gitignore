@@ -8,6 +8,7 @@ __pycache__/
 .coverage
 .coverage.*
 htmlcov/
+.ipynb_checkpoints/
 
 # Virtual environments and local Python config
 .venv/
@@ -84,3 +85,4 @@ checkpoints/
 
 # Local notes
 note.txt
+PLAN.md
