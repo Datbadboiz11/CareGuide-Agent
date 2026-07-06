@@ -28,6 +28,8 @@ class RetrievalHit(BaseModel):
     vector_score: float | None = None
     bm25_score: float | None = None
     section_bonus: float = 0.0
+    title_topic_bonus: float = 0.0
+    low_value_section_penalty: float = 0.0
 
 
 class RetrievalResult(BaseModel):

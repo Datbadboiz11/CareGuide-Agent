@@ -12,6 +12,8 @@ from careguide.schemas.triage import TriageResult
 
 
 MAX_CITATIONS = 5
+MIN_ANSWERABLE_CHUNKS = 3
+LOW_VALUE_SECTION_TYPES = {"metadata", "aliases"}
 SAFETY_DISCLAIMER = (
     "Thông tin này chỉ hỗ trợ sàng lọc ban đầu và lập kế hoạch chăm sóc, "
     "không thay thế chẩn đoán hoặc điều trị của bác sĩ."
@@ -36,6 +38,7 @@ def generate_answer(
     red_flags: RedFlagResult,
     retrieval: RetrievalResult,
 ) -> CareGuideAnswer:
+    answer_hits = prefer_answerable_chunks(retrieval.results)
     return CareGuideAnswer(
         triage_level=triage.triage_level,
         confidence=triage.confidence,
@@ -44,10 +47,18 @@ def generate_answer(
         care_advice=build_care_advice(triage),
         red_flags=build_red_flags(triage, red_flags),
         when_to_seek_help=build_when_to_seek_help(triage),
-        possible_related_conditions=extract_related_conditions(retrieval.results),
-        citations=build_citations(retrieval.results),
+        possible_related_conditions=extract_related_conditions(answer_hits),
+        citations=build_citations(answer_hits),
         safety_disclaimer=SAFETY_DISCLAIMER,
     )
+
+
+def prefer_answerable_chunks(hits: list[RetrievalHit], minimum_answerable: int = MIN_ANSWERABLE_CHUNKS) -> list[RetrievalHit]:
+    answerable = [hit for hit in hits if hit.section_type not in LOW_VALUE_SECTION_TYPES]
+    if len(answerable) >= minimum_answerable:
+        return answerable
+    low_value = [hit for hit in hits if hit.section_type in LOW_VALUE_SECTION_TYPES]
+    return answerable + low_value
 
 
 def build_user_summary(parsed: ParsedClinicalInfo) -> str:

@@ -10,8 +10,13 @@ from careguide.agents.retriever import (
     RankedItem,
     SimpleBM25,
     build_expanded_query,
+    build_expanded_terms,
+    fusion_weights,
+    has_emergency_terms,
+    low_value_section_penalty,
     reciprocal_rank,
     section_bonus,
+    title_topic_bonus,
     tokenize,
     weighted_rrf_fusion,
 )
@@ -50,6 +55,19 @@ def _metadata() -> list[dict[str, object]]:
             "section_heading": "Symptoms",
             "section_type": "symptoms",
             "text": "Flu symptoms include fever cough sore throat and body aches.",
+        },
+        {
+            "chunk_id": "chunk_alias_0",
+            "document_id": "medlineplus_dry_mouth",
+            "source": "MedlinePlus",
+            "url": "https://example.com/dry-mouth",
+            "title": "Dry Mouth",
+            "topic": "dry mouth",
+            "priority": "medium",
+            "symptom_group": "general",
+            "section_heading": "Also called",
+            "section_type": "aliases",
+            "text": "Also called xerostomia.",
         },
     ]
 
@@ -98,12 +116,64 @@ def test_weighted_rrf_fusion_merges_rankers_without_raw_score_normalization() ->
     assert hits[0].bm25_rank == 2
     assert hits[0].final_score == pytest.approx(expected_first_score)
     assert hits[0].section_bonus == 0.004
+    assert hits[0].low_value_section_penalty == 0.0
 
 
 def test_build_expanded_query_appends_terms() -> None:
     assert build_expanded_query("đau ngực", ["chest pain", "shortness of breath"]) == (
         "đau ngực chest pain shortness of breath"
     )
+
+
+def test_dynamic_fusion_weights_prefer_bm25_when_expanded_terms_exist() -> None:
+    assert fusion_weights([]) == (0.65, 0.35)
+    assert fusion_weights(["stroke"]) == (0.60, 0.40)
+    assert fusion_weights(["stroke", "face drooping"]) == (0.45, 0.55)
+
+
+def test_low_value_sections_are_penalized() -> None:
+    assert low_value_section_penalty("metadata") == 0.004
+    assert low_value_section_penalty("aliases") == 0.004
+    assert low_value_section_penalty("symptoms") == 0.0
+
+
+def test_title_topic_bonus_uses_expanded_terms() -> None:
+    metadata = {"title": "Chest pain", "topic": "chest pain"}
+
+    assert title_topic_bonus(metadata, ["chest pain", "heart attack"]) == 0.004
+    assert title_topic_bonus(metadata, ["stroke"]) == 0.0
+
+
+def test_section_bonus_can_disable_urgent_boost() -> None:
+    assert section_bonus("immediate_action", apply_urgent_bonus=False) == 0.0
+    assert section_bonus("symptoms", apply_urgent_bonus=False) == 0.002
+
+
+def test_build_expanded_terms_adds_medical_mapping() -> None:
+    terms = build_expanded_terms("Méo miệng, yếu một bên tay chân, nói khó")
+
+    assert "stroke" in terms
+    assert "face drooping" in terms
+    assert "speech difficulty" in terms
+
+
+def test_build_expanded_terms_adds_high_risk_mapping() -> None:
+    anaphylaxis_terms = build_expanded_terms("Sưng môi, nổi mề đay và khó thở sau khi ăn hải sản")
+    sepsis_terms = build_expanded_terms("Sốt rét run, lơ mơ sau nhiễm trùng")
+    pregnancy_terms = build_expanded_terms("Đang mang thai bị ra máu âm đạo")
+
+    assert "anaphylaxis" in anaphylaxis_terms
+    assert "swollen lips" in anaphylaxis_terms
+    assert "sepsis" in sepsis_terms
+    assert "confusion" in sepsis_terms
+    assert "vaginal bleeding" in pregnancy_terms
+    assert "ectopic pregnancy" in pregnancy_terms
+
+
+def test_has_emergency_terms_from_query_or_expansion() -> None:
+    assert has_emergency_terms("Tôi bị đau ngực", []) is True
+    assert has_emergency_terms("Tôi bị mệt", ["stroke"]) is True
+    assert has_emergency_terms("Tôi bị ho nhẹ", ["cough"]) is False
 
 
 def test_hybrid_retriever_bm25_mode_runs_without_faiss_or_model() -> None:
@@ -121,6 +191,6 @@ def test_hybrid_retriever_bm25_mode_runs_without_faiss_or_model() -> None:
     )
 
     assert result.mode == "bm25"
-    assert result.expanded_query == "Tôi bị sốt và ho fever cough"
+    assert result.expanded_query == "Tôi bị sốt và ho fever cough high temperature"
     assert result.results[0].title == "Flu"
     assert result.results[0].bm25_rank == 1

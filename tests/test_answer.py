@@ -1,4 +1,4 @@
-from careguide.agents.answer import AnswerAgent, generate_answer
+from careguide.agents.answer import AnswerAgent, generate_answer, prefer_answerable_chunks
 from careguide.schemas.clinical import ParsedClinicalInfo
 from careguide.schemas.red_flags import RedFlagFinding, RedFlagResult
 from careguide.schemas.retrieval import RetrievalHit, RetrievalResult
@@ -47,6 +47,22 @@ def _retrieval() -> RetrievalResult:
     )
 
 
+def _hit(rank: int, section_type: str, title: str = "Chest pain") -> RetrievalHit:
+    return RetrievalHit(
+        rank=rank,
+        chunk_id=f"chunk_{rank}",
+        document_id=f"doc_{rank}",
+        source="NHS",
+        url=f"https://www.nhs.uk/example/{rank}/",
+        title=title,
+        topic=title.lower(),
+        section_heading="Summary",
+        section_type=section_type,
+        text=f"{title} {section_type} text",
+        final_score=0.01,
+    )
+
+
 def test_generate_emergency_answer_has_safety_and_citations() -> None:
     triage = TriageResult(
         triage_level="emergency",
@@ -82,6 +98,32 @@ def test_generate_emergency_answer_has_safety_and_citations() -> None:
     assert answer.citations[0].title == "Chest pain"
     assert "không thay thế chẩn đoán" in answer.safety_disclaimer
     assert answer.possible_related_conditions == ["Chest pain"]
+
+
+def test_prefer_answerable_chunks_filters_metadata_when_enough_content_chunks() -> None:
+    hits = [
+        _hit(1, "urgent_advice"),
+        _hit(2, "metadata"),
+        _hit(3, "immediate_action", "Stomach ache"),
+        _hit(4, "aliases"),
+        _hit(5, "symptoms", "Abdominal Pain"),
+    ]
+
+    filtered = prefer_answerable_chunks(hits)
+
+    assert [hit.section_type for hit in filtered] == ["urgent_advice", "immediate_action", "symptoms"]
+
+
+def test_prefer_answerable_chunks_moves_low_value_chunks_to_the_end_when_content_is_limited() -> None:
+    hits = [
+        _hit(1, "urgent_advice"),
+        _hit(2, "metadata"),
+        _hit(3, "aliases"),
+    ]
+
+    filtered = prefer_answerable_chunks(hits)
+
+    assert [hit.section_type for hit in filtered] == ["urgent_advice", "metadata", "aliases"]
 
 
 def test_answer_agent_self_care_template() -> None:
