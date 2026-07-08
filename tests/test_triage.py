@@ -41,6 +41,34 @@ def test_triage_classifies_example_emergency() -> None:
     assert result.red_flags
 
 
+def test_triage_classifies_carbon_monoxide_pattern_as_emergency() -> None:
+    result = _classify(
+        "\u0054\u00f4\u0069 \u0111\u0061\u0075 \u0111\u1ea7\u0075 "
+        "\u0063\u0068\u00f3\u006e\u0067 \u006d\u1eb7\u0074 "
+        "\u0073\u0061\u0075 \u006b\u0068\u0069 \u1edf "
+        "\u0074\u0072\u006f\u006e\u0067 \u0070\u0068\u00f2\u006e\u0067 "
+        "\u006b\u00ed\u006e \u0063\u00f3 \u0062\u1ebf\u0070 \u0067\u0061\u0073"
+    )
+
+    assert result.triage_level == "emergency"
+    assert result.requires_emergency is True
+
+
+def test_triage_classifies_dengue_warning_pattern_as_urgent() -> None:
+    result = _classify(
+        "\u0053\u1ed1\u0074 \u0063\u0061\u006f \u0073\u0061\u0075 "
+        "\u006b\u0068\u0069 \u0111\u0069 \u0076\u00f9\u006e\u0067 "
+        "\u006e\u0068\u0069\u1ec7\u0074 \u0111\u1edb\u0069, "
+        "\u0111\u0061\u0075 \u006e\u0067\u01b0\u1eddi \u0076\u00e0 "
+        "\u0063\u0068\u1ea3\u0079 \u006d\u00e1\u0075 \u0063\u0068\u00e2\u006e "
+        "\u0072\u0103\u006e\u0067"
+    )
+
+    assert result.triage_level == "urgent_visit"
+    assert result.requires_urgent is True
+    assert result.requires_emergency is False
+
+
 def test_triage_agent_class_runs() -> None:
     parsed = parse_symptoms("Tôi ho khan gần 3 tuần, không sốt, không khó thở.")
     normalized = normalize_clinical_info(parsed)

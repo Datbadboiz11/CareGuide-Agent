@@ -3,12 +3,15 @@ __pycache__/
 *.py[cod]
 *$py.class
 .pytest_cache/
+.pytest_tmp*/
+.pytest_tmp_run*/
 .mypy_cache/
 .ruff_cache/
 .coverage
 .coverage.*
 htmlcov/
 .ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
 
 # Virtual environments and local Python config
 .venv/
@@ -36,11 +39,17 @@ Thumbs.db
 *.log
 logs/
 *.pid
+*.tmp
+*.temp
+*.bak
 
 # Build and distribution artifacts
 build/
 dist/
 site/
+.next/
+node_modules/
+coverage/
 
 # Generated reports and temporary outputs
 reports/
@@ -83,6 +92,13 @@ checkpoints/
 .agents/
 .codex/
 
+# Local app/demo config
+.streamlit/secrets.toml
+.streamlit/config.toml
+*.local
+
 # Local notes
 note.txt
 PLAN.md
+
+.docs/

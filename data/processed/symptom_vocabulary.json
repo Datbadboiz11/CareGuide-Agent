@@ -34,7 +34,7 @@
 
   {"canonical":"headache","category":"neurologic","aliases_vi":["đau đầu","đau đầu âm ỉ","đau đầu nhiều hơn mọi ngày"],"red_flag_hint":false},
   {"canonical":"thunderclap headache","category":"neurologic","aliases_vi":["đau đầu dữ dội đột ngột"],"red_flag_hint":true},
-  {"canonical":"altered mental status","category":"neurologic","aliases_vi":["lơ mơ","mất ý thức","không đáp ứng rõ","buồn ngủ bất thường"],"red_flag_hint":true},
+  {"canonical":"altered mental status","category":"neurologic","aliases_vi":["lơ mơ","lú lẫn","mất ý thức","không đáp ứng rõ","buồn ngủ bất thường"],"red_flag_hint":true},
   {"canonical":"seizure","category":"neurologic","aliases_vi":["co giật"],"red_flag_hint":true},
   {"canonical":"facial droop","category":"neurologic","aliases_vi":["méo miệng"],"red_flag_hint":true},
   {"canonical":"speech difficulty","category":"neurologic","aliases_vi":["nói khó"],"red_flag_hint":true},
@@ -66,7 +66,7 @@
   {"canonical":"neck and shoulder pain","category":"musculoskeletal","aliases_vi":["đau cổ vai gáy","đau cổ vai nhẹ"],"red_flag_hint":false},
   {"canonical":"wrist pain","category":"musculoskeletal","aliases_vi":["đau cổ tay nhẹ","đau nhẹ ở cổ tay"],"red_flag_hint":false},
   {"canonical":"shoulder pain","category":"musculoskeletal","aliases_vi":["đau vai khi nâng tay"],"red_flag_hint":false},
-  {"canonical":"knee pain","category":"musculoskeletal","aliases_vi":["đau khớp gối"],"red_flag_hint":false},
+  {"canonical":"knee pain","category":"musculoskeletal","aliases_vi":["đau khớp gối","đau gối"],"red_flag_hint":false},
   {"canonical":"heel pain","category":"musculoskeletal","aliases_vi":["đau gót chân"],"red_flag_hint":false},
   {"canonical":"muscle pain","category":"musculoskeletal","aliases_vi":["đau cơ nhẹ"],"red_flag_hint":false},
   {"canonical":"leg cramp","category":"musculoskeletal","aliases_vi":["chuột rút bắp chân"],"red_flag_hint":false},
@@ -108,7 +108,7 @@
 
   {"canonical":"bleeding","category":"trauma","aliases_vi":["chảy máu nhiều","chảy máu không cầm"],"red_flag_hint":true},
   {"canonical":"cut wound","category":"trauma","aliases_vi":["vết cắt"],"red_flag_hint":false},
-  {"canonical":"head injury","category":"trauma","aliases_vi":["chấn thương đầu","tai nạn xe máy"],"red_flag_hint":true},
+  {"canonical":"head injury","category":"trauma","aliases_vi":["chấn thương đầu","tai nạn xe máy","ngã đập đầu"],"red_flag_hint":true},
   {"canonical":"fall from height","category":"trauma","aliases_vi":["ngã cao"],"red_flag_hint":true},
   {"canonical":"burn","category":"trauma","aliases_vi":["bỏng rộng","phồng rộp"],"red_flag_hint":true},
   {"canonical":"electric shock","category":"trauma","aliases_vi":["điện giật"],"red_flag_hint":true},

@@ -55,6 +55,7 @@ SYMPTOM_TERMS = (
     "đau vùng hông lưng",
     "đau vùng mặt",
     "đau khớp gối",
+    "đau gối",
     "đau cổ vai gáy",
     "đau cổ vai nhẹ",
     "đau cổ tay nhẹ",
@@ -140,6 +141,7 @@ SYMPTOM_TERMS = (
     "ngất",
     "choáng váng",
     "lơ mơ",
+    "lú lẫn",
     "mất ý thức",
     "không đáp ứng rõ",
     "co giật",
@@ -197,6 +199,7 @@ SYMPTOM_TERMS = (
     "hóa chất bắn vào mắt",
     "hóa chất",
     "tai nạn xe máy",
+    "ngã đập đầu",
     "chấn thương đầu",
     "ngã cao",
     "bụng cứng",
@@ -306,10 +309,10 @@ def _is_negated_near_term(text: str, term: str) -> bool:
 
 def _extract_duration(text: str) -> str | None:
     patterns = (
-        r"(gần\s+)?\d+\s*(?:ngày|tuần|tháng|năm|giờ)",
+        r"(gần\s+)?\d+\s*(?:phút|giờ|ngày|tuần|tháng|năm)",
         r"(?:từ\s+)?(?:sáng nay|tối qua|hôm qua|hôm nay)",
-        r"nhiều\s+(?:ngày|tuần|tháng)",
-        r"vài\s+(?:ngày|tuần|tháng)",
+        r"nhiều\s+(?:phút|giờ|ngày|tuần|tháng)",
+        r"vài\s+(?:phút|giờ|ngày|tuần|tháng)",
     )
     for pattern in patterns:
         match = re.search(pattern, text)

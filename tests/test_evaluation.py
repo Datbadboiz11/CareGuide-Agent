@@ -1,4 +1,11 @@
 from careguide.evaluation.answer_eval import aggregate_answer_metrics, evaluate_answer, load_cases as load_answer_cases
+from careguide.evaluation.e2e_eval import (
+    E2EEvalCase,
+    aggregate_e2e_metrics,
+    evaluate_e2e_result,
+    load_cases as load_e2e_cases,
+    write_report,
+)
 from careguide.evaluation.retrieval_eval import (
     RetrievalEvalCase,
     aggregate_retrieval_metrics,
@@ -6,7 +13,12 @@ from careguide.evaluation.retrieval_eval import (
     first_matching_rank,
     load_cases as load_retrieval_cases,
 )
+from careguide.schemas.answer import AnswerCitation, CareGuideAnswer
+from careguide.schemas.clinical import ParsedClinicalInfo
+from careguide.schemas.normalization import NormalizationResult, NormalizedSymptom
+from careguide.schemas.red_flags import RedFlagResult
 from careguide.schemas.retrieval import RetrievalHit, RetrievalResult
+from careguide.schemas.triage import TriageResult
 
 
 def _hit(rank: int, title: str, source: str, section_type: str) -> RetrievalHit:
@@ -135,6 +147,118 @@ def test_retrieval_eval_case_files_load() -> None:
     assert all(case.expected_titles_any for case in cases)
 
 
+def test_e2e_eval_case_files_load() -> None:
+    cases = load_e2e_cases("data/test_cases/e2e_eval_cases.jsonl")
+
+    assert len(cases) >= 20
+    assert all(case.expected_retrieval_titles_any for case in cases)
+
+
+def test_evaluate_e2e_result_classifies_pass() -> None:
+    case = E2EEvalCase(
+        id="e2e_case_1",
+        input="Tôi bị đau ngực và khó thở",
+        expected_triage_level="emergency",
+        expected_symptoms_any=["đau ngực"],
+        expected_expanded_terms_any=["chest pain"],
+        expected_retrieval_titles_any=["Chest pain"],
+        expected_section_types_any=["immediate_action"],
+        min_answerable_chunks=1,
+        must_include=["cấp cứu"],
+        must_not_include=["chẩn đoán là"],
+        requires_citation=True,
+        requires_disclaimer=True,
+        requires_safe_escalation=True,
+    )
+    state = _e2e_state()
+
+    detail = evaluate_e2e_result(case, state)
+
+    assert detail["passed"] is True
+    assert detail["failure_stage"] is None
+    assert detail["checks"]["parser_symptom_hit"] is True
+    assert detail["checks"]["retrieval_hit_at_5_title"] is True
+    assert detail["checks"]["safety_pass"] is True
+
+
+def test_evaluate_e2e_result_classifies_retrieval_error() -> None:
+    case = E2EEvalCase(
+        id="e2e_case_2",
+        input="Tôi bị đau ngực và khó thở",
+        expected_triage_level="emergency",
+        expected_symptoms_any=["đau ngực"],
+        expected_expanded_terms_any=["chest pain"],
+        expected_retrieval_titles_any=["Stroke"],
+        expected_section_types_any=["immediate_action"],
+        min_answerable_chunks=1,
+        must_include=["cấp cứu"],
+        requires_citation=True,
+        requires_disclaimer=True,
+        requires_safe_escalation=True,
+    )
+
+    detail = evaluate_e2e_result(case, _e2e_state())
+
+    assert detail["passed"] is False
+    assert detail["failure_stage"] == "retrieval_error"
+
+
+def test_aggregate_e2e_metrics_and_write_report(tmp_path) -> None:
+    metrics = aggregate_e2e_metrics(
+        [
+            {
+                "passed": True,
+                "failure_stage": None,
+                "checks": {
+                    "parser_symptom_hit": True,
+                    "normalizer_expansion_hit": True,
+                    "triage_correct": True,
+                    "retrieval_hit_at_5_title": True,
+                    "retrieval_hit_at_5_section_type": True,
+                    "answer_context_has_expected_title": True,
+                    "min_answerable_chunks_pass": True,
+                    "citation_requirement_pass": True,
+                    "disclaimer_requirement_pass": True,
+                    "safe_escalation_pass": True,
+                    "must_include_pass": True,
+                    "must_include_any_pass": True,
+                    "must_not_include_pass": True,
+                    "safety_pass": True,
+                },
+            },
+            {
+                "passed": False,
+                "failure_stage": "retrieval_error",
+                "checks": {
+                    "parser_symptom_hit": True,
+                    "normalizer_expansion_hit": True,
+                    "triage_correct": True,
+                    "retrieval_hit_at_5_title": False,
+                    "retrieval_hit_at_5_section_type": True,
+                    "answer_context_has_expected_title": False,
+                    "min_answerable_chunks_pass": True,
+                    "citation_requirement_pass": True,
+                    "disclaimer_requirement_pass": True,
+                    "safe_escalation_pass": True,
+                    "must_include_pass": True,
+                    "must_include_any_pass": True,
+                    "must_not_include_pass": True,
+                    "safety_pass": True,
+                },
+            },
+        ]
+    )
+    report_path = tmp_path / "e2e_eval_report.json"
+    failures_path = tmp_path / "e2e_failures.jsonl"
+
+    write_report(metrics, report_path, failures_path)
+
+    assert metrics["passed_rate"] == 0.5
+    assert metrics["failure_stage_counts"] == {"retrieval_error": 1}
+    assert report_path.exists()
+    assert failures_path.read_text(encoding="utf-8").count("\n") == 1
+
+
 def test_evaluate_answer_rules() -> None:
     case = load_answer_cases("data/test_cases/answer_eval_cases.jsonl")[0]
     answer = {
@@ -203,3 +327,94 @@ def test_aggregate_answer_metrics() -> None:
     assert metrics["citation_present_rate"] == 0.5
     assert metrics["citation_requirement_pass_rate"] == 1.0
     assert metrics["must_include_pass_rate"] == 0.5
+
+
+def _e2e_state() -> dict:
+    hit = _hit(1, "Chest pain", "NHS", "immediate_action")
+    citation = AnswerCitation(
+        source="NHS",
+        title="Chest pain",
+        url="https://example.com/1",
+        chunk_id="chunk_1",
+        section_heading="Call 999 if:",
+        section_type="immediate_action",
+    )
+    answer = CareGuideAnswer(
+        triage_level="emergency",
+        confidence="high",
+        user_summary="Triệu chứng bạn mô tả: đau ngực, khó thở.",
+        recommendation="Cần gọi cấp cứu ngay.",
+        care_advice=["Gọi cấp cứu hoặc đến cơ sở y tế gần nhất."],
+        red_flags=["Chest pain with shortness of breath"],
+        when_to_seek_help="Tìm trợ giúp y tế khẩn cấp ngay bây giờ.",
+        related_health_topics=["Chest pain"],
+        citations=[citation],
+        safety_disclaimer="Thông tin này không thay thế chẩn đoán hoặc điều trị của bác sĩ.",
+    )
+    return {
+        "raw_input": "Tôi bị đau ngực và khó thở",
+        "errors": [],
+        "parsed": ParsedClinicalInfo(
+            symptoms=["đau ngực", "khó thở"],
+            raw_text="Tôi bị đau ngực và khó thở",
+        ),
+        "normalized": NormalizationResult(
+            normalized_symptoms=[
+                NormalizedSymptom(
+                    original="đau ngực",
+                    canonical="chest pain",
+                    category="cardiovascular",
+                    confidence=1.0,
+                    matched_alias="đau ngực",
+                    red_flag_hint=True,
+                )
+            ]
+        ),
+        "red_flags": RedFlagResult(requires_urgent=True, requires_emergency=True),
+        "triage": TriageResult(
+            triage_level="emergency",
+            confidence="high",
+            recommended_action="Cần gọi cấp cứu ngay.",
+            requires_urgent=True,
+            requires_emergency=True,
+        ),
+        "retrieval_query": "Tôi bị đau ngực và khó thở",
+        "expanded_terms": ["chest pain", "shortness of breath"],
+        "retrieval": RetrievalResult(
+            query="Tôi bị đau ngực và khó thở",
+            mode="hybrid",
+            top_k=5,
+            vector_top_k=1,
+            bm25_top_k=1,
+            results=[hit],
+        ),
+        "answer_context": [hit],
+        "answer": answer,
+        "safety": {
+            "requires_citation": True,
+            "passed": True,
+            "checks": {
+                "no_definitive_diagnosis": True,
+                "no_prescribing_or_dosage": True,
+                "emergency_escalation_present": True,
+                "disclaimer_present": True,
+                "citation_requirement_pass": True,
+            },
+        },
+        "final_output": {
+            "triage_level": answer.triage_level,
+            "confidence": answer.confidence,
+            "user_summary": answer.user_summary,
+            "recommendation": answer.recommendation,
+            "care_advice": answer.care_advice,
+            "red_flags": answer.red_flags,
+            "when_to_seek_help": answer.when_to_seek_help,
+            "related_health_topics": answer.related_health_topics,
+            "citations": [citation.model_dump(mode="json")],
+            "safety_disclaimer": answer.safety_disclaimer,
+            "safety": {
+                "requires_citation": True,
+                "passed": True,
+            },
+        },
+    }

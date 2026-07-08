@@ -97,7 +97,7 @@ def test_generate_emergency_answer_has_safety_and_citations() -> None:
     assert answer.citations[0].source == "NHS"
     assert answer.citations[0].title == "Chest pain"
     assert "không thay thế chẩn đoán" in answer.safety_disclaimer
-    assert answer.possible_related_conditions == ["Chest pain"]
+    assert answer.related_health_topics == ["Chest pain"]
 
 
 def test_prefer_answerable_chunks_filters_metadata_when_enough_content_chunks() -> None:

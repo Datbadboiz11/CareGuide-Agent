@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CareGuide</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="CareGuide">
+          <span class="brand-symbol" aria-hidden="true">
+            <svg viewBox="0 0 64 64" role="img">
+              <path d="M20.5 10.5c-7.2 0-12.8 5.8-12.8 13 0 13.6 20.5 26.1 24.3 28.2 3.8-2.1 24.3-14.6 24.3-28.2 0-7.2-5.6-13-12.8-13-4.8 0-9 2.7-11.5 6.5-2.5-3.8-6.7-6.5-11.5-6.5Z" fill="none" stroke="currentColor" stroke-width="4.2" stroke-linejoin="round"/>
+              <path d="M23 35h7l3-10 4 17 3-7h7" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span>
+            <strong>CareGuide</strong>
+            <small>Trợ lý sức khỏe của bạn</small>
+          </span>
+        </a>
+
+        <nav class="nav" aria-label="Điều hướng chính">
+          <a class="active" href="#">
+            <span class="nav-icon">⌂</span>
+            Trang chủ
+          </a>
+          <a href="#">
+            <span class="nav-icon">▤</span>
+            Hướng dẫn sử dụng
+          </a>
+          <a href="#">
+            <span class="nav-icon">ⓘ</span>
+            Về CareGuide
+          </a>
+        </nav>
+
+        <div class="top-actions">
+          <button class="emergency-link" type="button">
+            <span>☎</span>
+            Tình huống khẩn cấp
+          </button>
+          <button class="language-button" type="button">
+            <span>◎</span>
+            Tiếng Việt
+            <span>⌄</span>
+          </button>
+          <button class="profile-button" aria-label="Tài khoản" type="button">
+            <span></span>
+          </button>
+        </div>
+      </header>
+
+      <main class="content-grid">
+        <section class="left-column" aria-label="Nhập triệu chứng">
+          <div class="consult-card">
+            <div class="welcome">
+              <div class="assistant-avatar" aria-hidden="true">
+                <div class="avatar-face">
+                  <span></span>
+                </div>
+              </div>
+              <div>
+                <h1>Chào bạn! <span aria-hidden="true">👋</span></h1>
+                <p>Tôi là CareGuide, trợ lý sức khỏe AI luôn sẵn sàng lắng nghe và hỗ trợ bạn.</p>
+                <p>Hãy mô tả triệu chứng hoặc vấn đề sức khỏe bạn đang gặp phải.</p>
+              </div>
+            </div>
+
+            <div class="quick-prompts">
+              <p>Bạn có thể thử:</p>
+              <div class="prompt-list">
+                <button type="button" data-prompt="Tôi bị đau ngực và khó thở 30 phút">
+                  <span>♧</span>
+                  Đau ngực
+                </button>
+                <button type="button" data-prompt="Tôi bị sốt 39 độ, ho và đau họng 3 ngày, không khó thở">
+                  <span>♨</span>
+                  Sốt và ho
+                </button>
+                <button type="button" data-prompt="Tôi bị đau bụng dữ dội và nôn ra máu">
+                  <span>☽</span>
+                  Đau bụng
+                </button>
+                <button type="button" data-prompt="Tôi bị đau đầu tăng dần, buồn nôn và lú lẫn sau khi ngã đập đầu">
+                  <span>◌</span>
+                  Đau đầu
+                </button>
+                <button type="button" data-prompt="Tôi đau đầu chóng mặt sau khi ở trong phòng kín có bếp gas">
+                  <span>◎</span>
+                  Chóng mặt
+                </button>
+              </div>
+            </div>
+
+            <form class="symptom-form" id="symptom-form">
+              <label class="sr-only" for="symptom-input">Mô tả triệu chứng</label>
+              <textarea id="symptom-input" maxlength="1000" placeholder="Mô tả chi tiết triệu chứng của bạn..."></textarea>
+              <div class="form-footer">
+                <div class="form-left">
+                  <span id="counter">0/1000</span>
+                  <button class="attach-button" type="button">
+                    <span>⌕</span>
+                    Đính kèm (tùy chọn)
+                  </button>
+                </div>
+                <button class="submit-button" type="submit">
+                  Kiểm tra triệu chứng
+                  <span>➤</span>
+                </button>
+              </div>
+            </form>
+
+            <div class="privacy-note">
+              <span>♢</span>
+              Thông tin của bạn được bảo mật và chỉ dùng để hỗ trợ tư vấn. CareGuide không thay thế chẩn đoán từ bác sĩ.
+            </div>
+          </div>
+
+          <div class="support-grid">
+            <article class="support-card danger-card">
+              <h2><span>⚠</span>Dấu hiệu nguy hiểm</h2>
+              <ul>
+                <li>Đau ngực hoặc tức ngực kéo dài</li>
+                <li>Khó thở hoặc thở nhanh</li>
+                <li>Ngất xỉu, choáng váng</li>
+                <li>Yếu hoặc tê một bên cơ thể</li>
+                <li>Ho ra máu, nôn ra máu</li>
+              </ul>
+              <button type="button">Xem tất cả dấu hiệu</button>
+            </article>
+
+            <article class="support-card trust-card">
+              <h2><span>◇</span>Nguồn thông tin đáng tin cậy</h2>
+              <p>Chúng tôi tham khảo thông tin từ các tổ chức y tế uy tín:</p>
+              <ul class="check-list">
+                <li>NHS</li>
+                <li>CDC</li>
+                <li>MedlinePlus</li>
+              </ul>
+            </article>
+
+            <article class="support-card history-card">
+              <h2><span>◷</span>Lịch sử tư vấn</h2>
+              <p>Cuộc trò chuyện hiện tại được giữ trong phiên này để bạn có thể bổ sung thông tin liên tục.</p>
+              <ul class="check-list">
+                <li>Lưu các lần tư vấn trong phiên</li>
+                <li>Theo dõi triệu chứng theo thời gian</li>
+              </ul>
+              <button class="secondary-button" id="reset-session" type="button">Bắt đầu phiên mới</button>
+            </article>
+          </div>
+
+          <section class="chat-card" id="chat-card" hidden>
+            <h2>Cuộc trò chuyện hiện tại</h2>
+            <div id="chat-list"></div>
+          </section>
+        </section>
+
+        <aside class="result-panel" aria-label="Kết quả đánh giá">
+          <div class="result-head">
+            <h2><span>♢</span>Kết quả đánh giá ban đầu</h2>
+            <time id="result-time">Sẵn sàng</time>
+          </div>
+
+          <div id="empty-state" class="empty-state">
+            <div class="empty-avatar">AI</div>
+            <h3>Nhập triệu chứng để bắt đầu</h3>
+            <p>Kết quả sẽ hiển thị tại đây: mức khuyến nghị, việc cần làm, nguồn tham khảo và lưu ý an toàn.</p>
+          </div>
+
+          <div id="loading-state" class="loading-state" hidden>
+            <div class="pulse"></div>
+            <p>CareGuide đang phân tích triệu chứng...</p>
+          </div>
+
+          <div id="result-content" hidden>
+            <div class="triage-card" id="triage-card">
+              <div class="triage-icon">!</div>
+              <div>
+                <strong id="triage-label">Theo dõi tại nhà</strong>
+                <span id="triage-subtitle">Mức độ: SELF_CARE</span>
+              </div>
+              <span id="confidence-pill">Độ tin cậy: -</span>
+            </div>
+
+            <div class="recommendation-alert" id="recommendation-alert"></div>
+
+            <section class="result-section">
+              <h3><span>✥</span>Khuyến nghị</h3>
+              <p id="summary-text"></p>
+            </section>
+
+            <section class="result-section">
+              <h3><span>□</span>Việc cần làm ngay</h3>
+              <ol class="step-list" id="care-steps"></ol>
+            </section>
+
+            <section class="result-section" id="red-flags-section" hidden>
+              <h3><span>⚠</span>Dấu hiệu cần lưu ý</h3>
+              <ul id="red-flags"></ul>
+            </section>
+
+            <section class="result-section" id="topics-section" hidden>
+              <h3><span>◎</span>Chủ đề y tế liên quan</h3>
+              <div class="topic-list" id="topic-list"></div>
+            </section>
+
+            <section class="result-section citations">
+              <div class="section-head">
+                <h3><span>♧</span>Nguồn tham khảo</h3>
+                <button type="button">Xem thêm ›</button>
+              </div>
+              <div id="citations-list"></div>
+            </section>
+          </div>
+
+          <section class="safety-note">
+            <h3><span>◇</span>Lưu ý an toàn</h3>
+            <p id="safety-text">Đây chỉ là đánh giá ban đầu dựa trên thông tin bạn cung cấp và không thay thế chẩn đoán từ bác sĩ.</p>
+          </section>
+        </aside>
+      </main>
+
+      <button class="floating-chat" type="button">
+        <span>◌</span>
+        Hỏi CareGuide
+      </button>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

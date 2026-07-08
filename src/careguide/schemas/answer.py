@@ -30,6 +30,6 @@ class CareGuideAnswer(BaseModel):
     care_advice: list[str] = Field(default_factory=list)
     red_flags: list[str] = Field(default_factory=list)
     when_to_seek_help: str = Field(min_length=1)
-    possible_related_conditions: list[str] = Field(default_factory=list)
+    related_health_topics: list[str] = Field(default_factory=list)
     citations: list[AnswerCitation] = Field(default_factory=list)
     safety_disclaimer: str = Field(min_length=1)

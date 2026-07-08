@@ -277,6 +277,30 @@ def _combination_findings(
             )
         )
 
+    if _has_carbon_monoxide_risk(raw, canonical):
+        findings.append(
+            RedFlagFinding(
+                name="Possible carbon monoxide poisoning",
+                severity="emergency",
+                source="combination",
+                evidence="gas exposure in enclosed space with compatible symptoms",
+                canonical="carbon monoxide poisoning",
+                reason="Symptoms after possible gas exposure in an enclosed space can indicate carbon monoxide poisoning.",
+            )
+        )
+
+    if _has_dengue_warning_risk(parsed, raw, canonical):
+        findings.append(
+            RedFlagFinding(
+                name="Possible dengue warning signs",
+                severity="urgent",
+                source="combination",
+                evidence="fever after tropical travel with bleeding symptoms",
+                canonical="dengue",
+                reason="Fever after travel to a dengue-risk area with bleeding symptoms needs prompt medical assessment.",
+            )
+        )
+
     return findings
 
 
@@ -375,6 +399,74 @@ def _risk_factor_findings(
 
 def _positive_canonicals(normalized: NormalizationResult) -> set[str]:
     return {item.canonical for item in normalized.normalized_symptoms if not item.negated}
+
+
+def _has_carbon_monoxide_risk(raw: str, canonical: set[str]) -> bool:
+    has_enclosed_space = any(marker in raw for marker in ("phòng kín", "phong kin", "kín", "kin"))
+    has_gas_source = any(marker in raw for marker in ("bếp gas", "bep gas", "khí gas", "khi gas", "gas"))
+    has_compatible_symptom = bool(
+        canonical
+        & {
+            "headache",
+            "dizziness",
+            "nausea",
+            "vomiting",
+            "altered mental status",
+            "syncope",
+        }
+    ) or any(
+        marker in raw
+        for marker in (
+            "đau đầu",
+            "dau dau",
+            "chóng mặt",
+            "chong mat",
+            "buồn nôn",
+            "buon non",
+            "lơ mơ",
+            "lo mo",
+            "lú lẫn",
+            "lu lan",
+            "ngất",
+            "ngat",
+        )
+    )
+    return has_enclosed_space and has_gas_source and has_compatible_symptom
+
+
+def _has_dengue_warning_risk(
+    parsed: ParsedClinicalInfo,
+    raw: str,
+    canonical: set[str],
+) -> bool:
+    temperature = parsed.vitals.get("temperature")
+    has_fever = "fever" in canonical or "sốt" in raw or (
+        isinstance(temperature, (int, float)) and temperature >= 38.5
+    )
+    has_travel_or_exposure = any(
+        marker in raw
+        for marker in (
+            "vùng nhiệt đới",
+            "vung nhiet doi",
+            "nhiệt đới",
+            "nhiet doi",
+            "đi vùng",
+            "di vung",
+            "dengue",
+        )
+    )
+    has_bleeding = any(
+        marker in raw
+        for marker in (
+            "chảy máu",
+            "chay mau",
+            "chảy máu chân răng",
+            "chay mau chan rang",
+            "xuất huyết",
+            "xuat huyet",
+        )
+    )
+    return has_fever and has_travel_or_exposure and has_bleeding
 
 
 def _spo2(parsed: ParsedClinicalInfo) -> int | None:

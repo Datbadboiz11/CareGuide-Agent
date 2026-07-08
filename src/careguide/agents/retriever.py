@@ -34,6 +34,27 @@ SECTION_BONUS = {
     "symptoms": 0.002,
     "overview": 0.001,
 }
+FLU_RESPIRATORY_COMBO_EXPANSIONS = [
+    "flu",
+    "influenza",
+    "flu symptoms",
+    "respiratory tract infection",
+    "upper respiratory infection",
+    "viral respiratory infection",
+]
+COMMON_COLD_COMBO_EXPANSIONS = [
+    "common cold",
+    "cold symptoms",
+    "upper respiratory infection",
+    "respiratory tract infection",
+]
+ROUTINE_SECTION_BONUS = {
+    "symptoms": 0.003,
+    "overview": 0.002,
+    "self_care": 0.003,
+    "non_urgent_advice": 0.002,
+    "treatment": 0.001,
+}
 LOW_VALUE_SECTION_PENALTY = {
     "metadata": 0.004,
     "aliases": 0.004,
@@ -222,6 +243,7 @@ class HybridRetrieverAgent:
         expanded_terms: Iterable[str] | None = None,
         vector_top_k: int = 30,
         bm25_top_k: int = 30,
+        triage_level: str | None = None,
     ) -> RetrievalResult:
         expanded_term_list = build_expanded_terms(query, expanded_terms)
         expanded_query = build_expanded_query(query, expanded_term_list)
@@ -249,7 +271,12 @@ class HybridRetrieverAgent:
                 bm25_weight=bm25_weight,
                 rrf_k=self.rrf_k,
                 expanded_terms=expanded_term_list,
-                apply_urgent_section_bonus=has_emergency_terms(query, expanded_term_list),
+                apply_urgent_section_bonus=should_apply_urgent_section_bonus(
+                    query,
+                    expanded_term_list,
+                    triage_level,
+                ),
+                triage_level=triage_level,
             )
 
         return RetrievalResult(
@@ -313,6 +340,7 @@ def weighted_rrf_fusion(
     rrf_k: int = RRF_K,
     expanded_terms: Iterable[str] | None = None,
     apply_urgent_section_bonus: bool = True,
+    triage_level: str | None = None,
 ) -> list[RetrievalHit]:
     candidates: dict[int, dict[str, Any]] = {}
 
@@ -329,7 +357,7 @@ def weighted_rrf_fusion(
     scored: list[dict[str, Any]] = []
     for candidate in candidates.values():
         item_metadata = metadata[candidate["index"]]
-        bonus = section_bonus(item_metadata.get("section_type", ""), apply_urgent_section_bonus)
+        bonus = section_bonus(item_metadata.get("section_type", ""), apply_urgent_section_bonus, triage_level)
         title_bonus = title_topic_bonus(item_metadata, expanded_terms)
         penalty = low_value_section_penalty(item_metadata.get("section_type", ""))
         score = 0.0
@@ -407,7 +435,13 @@ def reciprocal_rank(rank: int, rrf_k: int = RRF_K) -> float:
     return 1.0 / (rrf_k + rank)
 
 
-def section_bonus(section_type: str, apply_urgent_bonus: bool = True) -> float:
+def section_bonus(
+    section_type: str,
+    apply_urgent_bonus: bool = True,
+    triage_level: str | None = None,
+) -> float:
+    if triage_level in {"routine_visit", "self_care"}:
+        return ROUTINE_SECTION_BONUS.get(section_type, 0.0)
     if section_type in {"immediate_action", "urgent_advice", "when_to_get_help", "emergency"}:
         return SECTION_BONUS.get(section_type, 0.0) if apply_urgent_bonus else 0.0
     return SECTION_BONUS.get(section_type, 0.0)
@@ -448,7 +482,19 @@ def fusion_weights(
 
 def has_emergency_terms(query: str, expanded_terms: Iterable[str] | None = None) -> bool:
     text = normalize_query_term(build_expanded_query(query, expanded_terms))
-    return any(term in text for term in EMERGENCY_TERMS)
+    return any(contains_query_marker(text, term) for term in EMERGENCY_TERMS)
+
+
+def should_apply_urgent_section_bonus(
+    query: str,
+    expanded_terms: Iterable[str] | None = None,
+    triage_level: str | None = None,
+) -> bool:
+    if triage_level in {"emergency", "urgent_visit"}:
+        return True
+    if triage_level in {"routine_visit", "self_care"}:
+        return False
+    return has_emergency_terms(query, expanded_terms)
 
 
 def load_manifest(path: str | Path) -> dict[str, Any]:
@@ -511,12 +557,59 @@ def build_expanded_terms(query: str, expanded_terms: Iterable[str] | None = None
     if expanded_terms:
         terms.extend(term for term in expanded_terms if term)
 
-    query_text = query.lower()
+    query_text = normalize_query_term(query)
     for marker, marker_terms in QUERY_EXPANSIONS.items():
-        if marker in query_text:
+        if contains_query_marker(query_text, marker):
             terms.extend(marker_terms)
 
+    terms.extend(contextual_expansion_terms(query_text, terms))
     return _dedupe_terms(terms)
+
+
+def contextual_expansion_terms(
+    query_text: str,
+    terms: Iterable[str],
+) -> list[str]:
+    normalized_terms = {normalize_query_term(term) for term in terms if term}
+    normalized_query = normalize_query_term(query_text)
+    expansions: list[str] = []
+
+    if _has_all(normalized_terms, "fever", "cough") and _has_any(
+        normalized_terms,
+        "sore throat",
+        "body aches",
+        "muscle aches",
+    ):
+        expansions.extend(FLU_RESPIRATORY_COMBO_EXPANSIONS)
+
+    has_cold_symptoms = _has_all(normalized_terms, "runny nose", "sneezing")
+    has_high_risk_respiratory_sign = _has_any(
+        normalized_terms,
+        "high fever",
+        "shortness of breath",
+        "difficulty breathing",
+    ) or any(
+        contains_query_marker(normalized_query, marker)
+        for marker in ("high fever", "shortness of breath", "difficulty breathing")
+    )
+    if has_cold_symptoms and not has_high_risk_respiratory_sign:
+        expansions.extend(COMMON_COLD_COMBO_EXPANSIONS)
+
+    return expansions
+
+
+def _has_all(terms: set[str], *required: str) -> bool:
+    return all(term in terms for term in required)
+
+
+def _has_any(terms: set[str], *candidates: str) -> bool:
+    return any(term in terms for term in candidates)
+
+
+def contains_query_marker(text: str, marker: str) -> bool:
+    normalized_text = normalize_query_term(text)
+    normalized_marker = normalize_query_term(marker)
+    return re.search(rf"(?<!\w){re.escape(normalized_marker)}(?!\w)", normalized_text) is not None
 
 
 def normalize_query_term(text: str) -> str:

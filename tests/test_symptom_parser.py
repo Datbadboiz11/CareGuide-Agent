@@ -30,6 +30,23 @@ def test_parser_extracts_example_fields() -> None:
     assert parsed.vitals["temperature"] == 38.8
 
 
+def test_parser_extracts_minutes_and_hours_duration() -> None:
+    chest_pain = parse_symptoms("Tôi bị đau ngực và khó thở 30 phút.")
+    fever = parse_symptoms("Tôi bị sốt và đau đầu 2 giờ.")
+
+    assert chest_pain.duration == "30 phút"
+    assert fever.duration == "2 giờ"
+
+
+def test_parser_extracts_head_injury_confusion_and_knee_pain_terms() -> None:
+    head_injury = parse_symptoms("Ngã đập đầu, đau đầu tăng dần, nôn và lú lẫn.")
+    knee_pain = parse_symptoms("Tôi đau gối âm ỉ 3 tuần, không sốt.")
+
+    assert "ngã đập đầu" in head_injury.symptoms
+    assert "lú lẫn" in head_injury.symptoms
+    assert "đau gối" in knee_pain.symptoms
+
+
 def test_parser_runs_on_all_triage_cases() -> None:
     for case in _cases():
         parsed = parse_symptoms(case.user_input)

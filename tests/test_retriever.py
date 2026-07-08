@@ -16,6 +16,7 @@ from careguide.agents.retriever import (
     low_value_section_penalty,
     reciprocal_rank,
     section_bonus,
+    should_apply_urgent_section_bonus,
     title_topic_bonus,
     tokenize,
     weighted_rrf_fusion,
@@ -149,12 +150,53 @@ def test_section_bonus_can_disable_urgent_boost() -> None:
     assert section_bonus("symptoms", apply_urgent_bonus=False) == 0.002
 
 
+def test_section_bonus_uses_routine_policy_for_non_urgent_triage() -> None:
+    assert section_bonus("immediate_action", triage_level="self_care") == 0.0
+    assert section_bonus("urgent_advice", triage_level="routine_visit") == 0.0
+    assert section_bonus("symptoms", triage_level="self_care") == 0.003
+    assert section_bonus("overview", triage_level="routine_visit") == 0.002
+
+
+def test_urgent_section_bonus_uses_triage_level_when_available() -> None:
+    assert should_apply_urgent_section_bonus("mild sore throat", ["sore throat"], "self_care") is False
+    assert should_apply_urgent_section_bonus("fever cough", ["flu"], "urgent_visit") is True
+    assert should_apply_urgent_section_bonus("chest pain", [], None) is True
+
+
 def test_build_expanded_terms_adds_medical_mapping() -> None:
     terms = build_expanded_terms("Méo miệng, yếu một bên tay chân, nói khó")
 
     assert "stroke" in terms
     assert "face drooping" in terms
     assert "speech difficulty" in terms
+
+
+def test_build_expanded_terms_does_not_match_short_substrings_inside_words() -> None:
+    terms = build_expanded_terms("Tôi bị đau ngực và khó thở", ["shortness of breath"])
+
+    assert "shortness of breath" in terms
+    assert "cough" not in terms
+
+
+def test_build_expanded_terms_adds_flu_respiratory_combo() -> None:
+    terms = build_expanded_terms("", ["fever", "cough", "sore throat"])
+
+    assert "flu" in terms
+    assert "influenza" in terms
+    assert "flu symptoms" in terms
+    assert "respiratory tract infection" in terms
+    assert "upper respiratory infection" in terms
+    assert "viral respiratory infection" in terms
+
+
+def test_build_expanded_terms_adds_common_cold_from_combo_only() -> None:
+    cold_terms = build_expanded_terms("", ["runny nose", "sneezing"])
+    risky_terms = build_expanded_terms("", ["runny nose", "sneezing", "shortness of breath"])
+
+    assert "common cold" in cold_terms
+    assert "cold symptoms" in cold_terms
+    assert "upper respiratory infection" in cold_terms
+    assert "common cold" not in risky_terms
 
 
 def test_build_expanded_terms_adds_high_risk_mapping() -> None:

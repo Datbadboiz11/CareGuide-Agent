@@ -47,7 +47,7 @@ def generate_answer(
         care_advice=build_care_advice(triage),
         red_flags=build_red_flags(triage, red_flags),
         when_to_seek_help=build_when_to_seek_help(triage),
-        possible_related_conditions=extract_related_conditions(answer_hits),
+        related_health_topics=extract_related_conditions(answer_hits),
         citations=build_citations(answer_hits),
         safety_disclaimer=SAFETY_DISCLAIMER,
     )
